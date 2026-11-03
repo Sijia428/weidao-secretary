@@ -1,0 +1,23 @@
+# 密钥与原始材料不进仓库
+.env
+.env.*
+!.env.example
+
+# 财报原始 PDF 不进仓库
+raw/
+
+# 体积大的中间产物
+build/pages.jsonl
+build/chunks.jsonl
+build/kb.jsonl
+build/*.pkl
+colab_upload/kb.jsonl
+
+# 临时目录
+.tmp/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
