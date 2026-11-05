@@ -46,3 +46,27 @@
 
 > 补充说明：这三条 RAG 回答里有两处明显编造（"1,000 万元"、"3,597.25 万元"在原文里查不到），
 > 这恰好是"同一基座不微调时会编数字"的证据，与结论一致。
+
+## 三、代码已同步修正（不只是改文档）
+
+`train_lora.ipynb` 第 7 格（生成+判分）里的 `score()` **已经改成修正后的口径**，与本文档一致：
+
+```python
+# 修正前（会把"说得像"算成答对）
+ref_body = norm(item.get("ref_a", "")).split("依据：")[0]
+grams = [ref_body[i:i+8] for i in range(0, max(len(ref_body)-8, 1), 4)]
+frag = 1 if any(g and g in np_ for g in grams) else 0
+...
+    ok = frag          # ← 无数字时用 8 字片段重合兜底
+
+# 修正后
+if nums:
+    hit = sum(1 for n in nums if n in np_) / len(nums)
+    ok = 1 if hit >= 0.6 else 0        # 有数字：按数字判
+else:
+    hit = float("nan")
+    ok = cite                          # 无数字：只认「引用页码正确」
+```
+
+同时 `证据_实际生成回答_288条.csv` 增列 **`修正后答对(1/0)`**，
+288 条逐条给出修正后的判定，可直接用 Excel 求和复核（原口径 49 条答对 → 修正后 13 条）。
